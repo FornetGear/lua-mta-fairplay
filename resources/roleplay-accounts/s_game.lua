@@ -19,12 +19,13 @@
 
 addEventHandler("onResourceStart", resourceRoot,
 	function()
-		setRuleValue("Author", "Socialz")
-		setRuleValue("Developers", "Socialz")
+		setRuleValue("Author", "Socialz and Miguel Santos(Gomitung)")
+		setRuleValue("Developers", "Socialz and Miguel Santos(Gomitung)")
 		setRuleValue("Created", "23rd of December 2010")
-		setRuleValue("Website", "mtafairplay.net")
+		setRuleValue("Updated", "22rd of August 2014")
+		setRuleValue("Website", "https://github.com/Socialz/lua-mta-fairplay")
 		setRuleValue("Version", getScriptVersion())
-		setMapName("San Andreas Roleplay")
+		setMapName("Los Santos Roleplay")
 		setGameType("Public Beta")
 		
 		local water = createWater(-2998, -2998, -500, 2998, -2998, -500, -2998, 2998, -500, 2998, 2998, -500)

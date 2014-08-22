@@ -25,6 +25,20 @@ local bike = {[581]=true, [509]=true, [481]=true, [462]=true, [521]=true, [463]=
 local motorbike = {[581]=true, [462]=true, [521]=true, [463]=true, [522]=true, [461]=true, [448]=true, [468]=true, [586]=true}
 local postGUI = false
 
+local function getElementSpeed(element, unit)
+	if (unit == nil) then unit = 0 end
+	if (isElement(element)) then
+		local x, y, z = getElementVelocity(element)
+		if (unit == "mph") or (unit == 1) or (unit == "1") then
+			return (x^2+y^2+z^2)^0.5*100
+		else
+			return (x^2+y^2+z^2)^0.5*1.8*100
+		end
+	else
+		return false
+	end
+end
+
 local function updateGear(state)
 	local vehicle = getPedOccupiedVehicle(localPlayer)
 	if (not vehicle) or (getVehicleController(vehicle) ~= localPlayer) or (not exports['roleplay-accounts']:isClientPlaying(localPlayer)) then return end
@@ -54,7 +68,7 @@ local function updateGear(state)
 	elseif (state == -1) then
 		if (vehicleCurrentGear > -1) then
 			if (vehicleCurrentGear == 0) then
-				if (bike[getElementModel(vehicle)]) then
+				if (bike[getElementModel(vehicle)] or (getElementSpeed(vehicle) > 0)) then
 					return
 				end
 			end
@@ -81,20 +95,6 @@ local function updateGear(state)
 	end
 	
 	playSoundFrontEnd(4)
-end
-
-local function getElementSpeed(element, unit)
-	if (unit == nil) then unit = 0 end
-	if (isElement(element)) then
-		local x, y, z = getElementVelocity(element)
-		if (unit == "mph") or (unit == 1) or (unit == "1") then
-			return (x^2+y^2+z^2)^0.5*100
-		else
-			return (x^2+y^2+z^2)^0.5*1.8*100
-		end
-	else
-		return false
-	end
 end
 
 local function updateGearbox()

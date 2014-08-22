@@ -25,8 +25,8 @@ local connection = nil
 local databaseConfig = {
 	["type"] = "mysql",
 	["hostname"] = "127.0.0.1",
-	["database"] = "",
-	["username"] = "",
+	["database"] = "roleplay",
+	["username"] = "root",
 	["password"] = ""
 }
 
@@ -433,7 +433,7 @@ function exitGameMode(player)
 	triggerEvent(":_fuckJailTimer_:", player, 1)
 	triggerClientEvent(player, ":_closeAllMenus_:", player)
 	triggerClientEvent(player, ":_characterCreationResponse_:", player, 2)
-	triggerClientEvent(player, ":_updateScoreboardBind_:", player, 1)
+	triggerClientEvent(player, ":_updateScoreboardBind_:", player)
 end
 
 addEvent(":_finishForceExit_:", true)
@@ -730,7 +730,6 @@ addEventHandler("onPlayerChangeNick", root,
 	function(old, new)
 		if (string.find(new, exports['roleplay-anticheat']:getSafeNamePrefix() .. ".")) then return end
 		cancelEvent()
-		outputChatBox("Sorry, but we do not allow the change of nicknames on our server. Disconnect and change your nickname then instead.", source, 245, 20, 20, false)
 	end
 )
 

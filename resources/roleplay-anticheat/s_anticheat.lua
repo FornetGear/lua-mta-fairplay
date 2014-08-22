@@ -16,8 +16,7 @@
 	
 	(c) Copyright 2014 FairPlay Gaming. All rights reserved.
 ]]
-
-local playerNamePrefix = "FairPlayMTA"
+local playerNamePrefix = "Roleplay"
 
 function getSafeNamePrefix()
 	return playerNamePrefix
@@ -42,7 +41,7 @@ addEventHandler(":_returnCheat_:", root,
 					outputServerLog("Anti-cheat: " .. getPlayerName(client) .. " is most likely cheating - game speed expected to be at " .. getGameSpeed() .. " but client returned '" .. gameSpeed .. "'.")
 				end
 				
-				if (gravity * 100000 ~= getGravity() * 100000) then
+				if (string.format("%.4f", gravity) ~= string.format("%.4f", getGravity())) then
 					if (exports['roleplay-accounts']:isClientTrialAdmin(client)) then return end
 					exports['roleplay-accounts']:outputAdminLog("WARNING! Game gravity is affected! '" .. getGravity() .. "' is expected, but returned '" .. gravity .. "' by " .. getPlayerName(client) .. ". Please verify.", 5)
 					outputServerLog("Anti-cheat: " .. getPlayerName(client) .. " is most likely cheating - gravity expected to be at " .. getGravity() .. " but client returned '" .. gravity .. "'.")

@@ -43,7 +43,7 @@ local function displayPurchaseWindow()
 		g_purchase_translabel = guiCreateLabel(15, 105, 111, 15, "Transmission:", false, g_purchase_window)
 		guiSetFont(g_purchase_translabel, "clear-normal")
 		
-		g_purchase_trans = guiCreateComboBox(136, 100, 226, 61, "Select...", false, g_purchase_window)
+		g_purchase_trans = guiCreateComboBox(136, 100, 226, 70, "Select...", false, g_purchase_window)
 		guiComboBoxAddItem(g_purchase_trans, "Manual Transmission")
 		guiComboBoxAddItem(g_purchase_trans, "Automatic Transmission")
 		guiComboBoxSetSelected(g_purchase_trans, 0)
@@ -92,7 +92,13 @@ local function displayPurchaseWindow()
 			if (cash < price) then
 				outputChatBox("You have insufficient funds in order to purchase this vehicle by cash.", 245, 20, 20, false)
 			else
-				triggerServerEvent(":_purchaseVehicle_:", localPlayer, false, vehicle)
+				local endtransmission = 1
+				if guiComboBoxGetItemText(g_purchase_trans, guiComboBoxGetSelected(g_purchase_trans)) == "Manual Transmission" then
+					endtransmission = 1
+				else
+					endtransmission = 0
+				end
+				triggerServerEvent(":_purchaseVehicle_:", localPlayer, false, vehicle,endtransmission)
 			end
 		end, false
 	)
@@ -102,7 +108,14 @@ local function displayPurchaseWindow()
 			if (bank < price) then
 				outputChatBox("You have insufficient funds in order to purchase this vehicle by bank.", 245, 20, 20, false)
 			else
-				triggerServerEvent(":_purchaseVehicle_:", localPlayer, true, vehicle)
+				local endtransmission = 1
+				if guiComboBoxGetItemText(g_purchase_trans, guiComboBoxGetSelected(g_purchase_trans)) == "Manual Transmission" then
+					endtransmission = 1
+				else
+					endtransmission = 0
+				end
+
+				triggerServerEvent(":_purchaseVehicle_:", localPlayer, true, vehicle, endtransmission)
 			end
 		end, false
 	)

@@ -30,8 +30,7 @@ addEventHandler(":_dropItem_:", root,
 		end
 		
 		local rx, ry, rz = getElementRotation(client)
-		
-		if (not element) or (element and getElementType(element) ~= "player") or (not exports['roleplay-accounts']:isClientPlaying(element)) then
+		if (not element) or (element and (getElementType(element) ~= "player" and getElementType(element) ~= "vehicle")) then
 			local x, y, z = x+getItems()[itemID][5], y+getItems()[itemID][6], z+getItems()[itemID][7]
 			local rx, ry, rz = rx+getItems()[itemID][8], ry+getItems()[itemID][9], rz+getItems()[itemID][10]
 			local item = createObject(getItems()[itemID][4], x, y, z, rx, ry, rz)
@@ -58,9 +57,13 @@ addEventHandler(":_dropItem_:", root,
 			if (itemID == 10) then
 				triggerClientEvent(client, ":_exitPhoneWindows_:", client, value)
 			end
-		else
+		elseif (getElementType(element) == "player") then
 			exports['roleplay-chat']:outputLocalActionMe(client, "gave " .. exports['roleplay-accounts']:getRealPlayerName(element) .. " a " .. getItems()[itemID][1] .. ".")
 			outputServerLog("World items: " .. getPlayerName(client) .. " [" .. exports['roleplay-accounts']:getAccountName(client) .. "] gave " .. getPlayerName(element) .. " [" .. exports['roleplay-accounts']:getAccountName(element) .. "] a '" .. getItems()[itemID][1] .. "' (" .. itemID .. ").")
+			takeItem(client, itemID, value, dbEntryID)
+			giveItem(element, itemID, value)
+		elseif (getElementType(element) == "vehicle") then
+			exports['roleplay-chat']:outputLocalActionMe(client, "puts a " .. getItems()[itemID][1] .." in a vehicle.")
 			takeItem(client, itemID, value, dbEntryID)
 			giveItem(element, itemID, value)
 		end
@@ -75,15 +78,18 @@ addEventHandler(":_pickItemFromWorld_:", root,
 			outputChatBox("Sorry! The world item is no longer.", client, 245, 20, 20, false)
 			return
 		end
-		
-		exports['roleplay-chat']:outputLocalActionMe(client, "picked up a " .. getItems()[worlditems[tableID][1]][1] .. ".")
-		outputServerLog("World items: " .. getPlayerName(client) .. " [" .. exports['roleplay-accounts']:getAccountName(client) .. "] took a '" .. getItems()[worlditems[tableID][1]][1] .. "' from world (" .. worlditems[tableID][1] .. ").")
-		
-		dbExec(exports['roleplay-accounts']:getSQLConnection(), "DELETE FROM `??` WHERE `??` = '??'", "worlditems", "id", tableID)
-		
-		destroyElement(object)
-		giveItem(client, worlditems[tableID][1], worlditems[tableID][2])
-		table.remove(worlditems, tableID)
+		if worlditems[tableID][11] == 0 then			
+			exports['roleplay-chat']:outputLocalActionMe(client, "picked up a " .. getItems()[worlditems[tableID][1]][1] .. ".")
+			outputServerLog("World items: " .. getPlayerName(client) .. " [" .. exports['roleplay-accounts']:getAccountName(client) .. "] took a '" .. getItems()[worlditems[tableID][1]][1] .. "' from world (" .. worlditems[tableID][1] .. ").")
+			
+			dbExec(exports['roleplay-accounts']:getSQLConnection(), "DELETE FROM `??` WHERE `??` = '??'", "worlditems", "id", tableID)
+			
+			destroyElement(object)
+			giveItem(client, worlditems[tableID][1], worlditems[tableID][2])
+			table.remove(worlditems, tableID)
+		else
+			outputChatBox("Sorry! This world item is protected.", client, 245, 20, 20, false)
+		end
 	end
 )
 
@@ -125,7 +131,7 @@ addEventHandler("onResourceStart", resourceRoot,
 					setElementDimension(object, row["dimension"])
 					setElementAlpha(object, getItems()[row["itemID"]][11])
 					setElementCollisionsEnabled(object, getItems()[row["itemID"]][12])
-					worlditems[row["id"]] = {row["itemID"], row["value"], row["value"], x, y, z, rx, ry, rz, object}
+					worlditems[row["id"]] = {row["itemID"], row["value"], row["value"], x, y, z, rx, ry, rz, object,row["protection"]}
 					setElementData(object, "roleplay:worlditems.id", row["id"], true)
 					setElementData(object, "roleplay:worlditems.itemID", row["itemID"], true)
 					setElementData(object, "roleplay:worlditems.value", row["value"], true)

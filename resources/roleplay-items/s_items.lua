@@ -17,6 +17,12 @@
 	(c) Copyright 2014 FairPlay Gaming. All rights reserved.
 ]]
 
+function tablelength(table)
+	local count = 0
+	for _ in pairs(table) do count = count+1 end
+	return count
+end
+
 local data = {}
 
 function getPlayerItems(player)
@@ -51,120 +57,221 @@ function loadItems(player)
 	end
 end
 
-function giveItem(player, itemID, value, dbEntryID, ringtoneID, messagetoneID)
-	if (getItems()[itemID]) then
-		local _dbEntryID
-		local _value = ""
-		
-		if (value) then
-			if (string.len(value) > 0) and (value ~= "") then
-				_value = value
-			end
-		end
-		
-		if ((tonumber(getElementData(player, "roleplay:characters.weight"))+getItemWeight(itemID)) > (tonumber(getElementData(player, "roleplay:characters.maxweight")))) then
-			return false, 1
-		end
-		
-		if (not dbEntryID) then
-			local query = dbQuery(exports['roleplay-accounts']:getSQLConnection(), "INSERT INTO `??` (??, ??, ??, ??, ??, ??) VALUES ('??', '??', '??', '??', '??', '??')", "inventory", "charID", "itemID", "value", "ringtoneID", "messagetoneID", "timestamp", exports['roleplay-accounts']:getCharacterID(player), itemID, _value, (ringtoneID and ringtoneID or 1), (messagetoneID and messagetoneID or 1), getRealTime().timestamp)
-			local result, num_affected_rows, last_insert_id = dbPoll(query, -1)
-			_dbEntryID = last_insert_id
-		else
-			_dbEntryID = dbEntryID
-		end
-		
-		if (itemID == 8) then
-			setElementData(player, "roleplay:characters.maxweight", 20, true)
-		elseif (itemID == 9) then
-			setElementData(player, "roleplay:characters.maxweight", 30, true)
-		end
-		
-		setElementData(player, "roleplay:characters.weight", tonumber(getElementData(player, "roleplay:characters.weight"))+getItemWeight(itemID), true)
-		table.insert(data[player].items, {_dbEntryID, itemID, _value, (ringtoneID and ringtoneID or 1), (messagetoneID and messagetoneID or 1)})
-		outputServerLog("Items: Gave item " .. getItemName(itemID) .. " (dbid: " .. _dbEntryID .. ", item id: " .. itemID .. ", type: " .. getItemType(itemID) .. ") to " .. getPlayerName(player) .. " [" .. exports['roleplay-accounts']:getAccountName(player) .. "].")
-		triggerClientEvent(player, ":_syncInventory_:", player, data[player].items)
-		
-		return true
-	else
-		return false
-	end
-end
-
-function takeItem(player, itemID, value, dbEntryID)
-	local _dbEntryID
-	local _value
-	
-	if (data[player]) then
-		for i,v in pairs(data[player].items) do
-			if (data[player].items[i][2] == itemID) then
-				if (value) then
+function giveItem(element, itemID, value, dbEntryID, ringtoneID, messagetoneID)
+	if getElementType(element) == "player" then
+		if (getItems()[itemID]) then
+			local _dbEntryID
+			local _value = ""
+			
+			if (value) then
+				if (string.len(value) > 0) and (value ~= "") then
 					_value = value
-					if (not dbEntryID) then
-						if (data[player].items[i][3] == value) then
-							_dbEntryID = data[player].items[i][1]
-							table.remove(data[player].items, i)
-							break
-						end
-					else
-						if (data[player].items[i][1] == dbEntryID) then
-							_dbEntryID = dbEntryID
-							table.remove(data[player].items, i)
-							break
-						end
-					end
-				else
-					_value = data[player].items[i][3]
-					_dbEntryID = data[player].items[i][1]
-					table.remove(data[player].items, i)
-					break
 				end
 			end
+			if ((tonumber(getElementData(element, "roleplay:characters.weight"))+getItemWeight(itemID)) > (tonumber(getElementData(element, "roleplay:characters.maxweight")))) then
+				return false, 1
+			end
+			if (not dbEntryID) then
+				local query = dbQuery(exports['roleplay-accounts']:getSQLConnection(), "INSERT INTO `??` (??, ??, ??, ??, ??, ??) VALUES ('??', '??', '??', '??', '??', '??')", "inventory", "charID", "itemID", "value", "ringtoneID", "messagetoneID", "timestamp", exports['roleplay-accounts']:getCharacterID(element), itemID, _value, (ringtoneID and ringtoneID or 1), (messagetoneID and messagetoneID or 1), getRealTime().timestamp)
+				local result, num_affected_rows, last_insert_id = dbPoll(query, -1)
+				_dbEntryID = last_insert_id
+			else
+				_dbEntryID = dbEntryID
+			end
+			
+			if (itemID == 8) then
+				setElementData(element, "roleplay:characters.maxweight", 20, true)
+			elseif (itemID == 9) then
+				setElementData(element, "roleplay:characters.maxweight", 30, true)
+			end
+			
+			setElementData(element, "roleplay:characters.weight", tonumber(getElementData(element, "roleplay:characters.weight"))+getItemWeight(itemID), true)
+			table.insert(data[element].items, {_dbEntryID, itemID, _value, (ringtoneID and ringtoneID or 1), (messagetoneID and messagetoneID or 1)})
+			outputServerLog("Items: Gave item " .. getItemName(itemID) .. " (dbid: " .. _dbEntryID .. ", item id: " .. itemID .. ", type: " .. getItemType(itemID) .. ") to " .. getPlayerName(element) .. " [" .. exports['roleplay-accounts']:getAccountName(element) .. "].")
+			triggerClientEvent(element, ":_syncInventory_:", element, data[element].items)
+			
+			return true
+		else
+			return false
+		end
+	elseif getElementType(element) == "vehicle" then
+		if (getItems()[itemID]) then
+			local _value = ""
+			
+			if (value) then
+				if (string.len(value) > 0) and (value ~= "") then
+					_value = value
+				end
+			end
+			
+			if ((tonumber(getElementData(element, "roleplay:vehicles.weight"))+getItemWeight(itemID)) > (tonumber(getElementData(element, "roleplay:vehicles.maxweight")))) then
+				return false, 1
+			end
+			local newinventory = getElementData(element, "roleplay:vehicles.inventory")
+			table.insert(newinventory, { itemID, _value, (ringtoneID and ringtoneID or 1), (messagetoneID and messagetoneID or 1), 0})
+			setElementData(element,"roleplay:vehicles.inventory", newinventory, true )
+			setElementData(element, "roleplay:vehicles.weight", tonumber(getElementData(element, "roleplay:vehicles.weight"))+getItemWeight(itemID), true)
+			exports['roleplay-vehicles']:saveVehicle(element)
+			outputServerLog("Items: Gave item " .. getItemName(itemID) .. " (item id: " .. itemID .. ", type: " .. getItemType(itemID) .. ") to vehicle ID:" .. exports['roleplay-vehicles']:getVehicleRealID(element) .. ".")			
+			return true
+		else
+			return false
 		end
 	else
 		return false
 	end
-	
-	-- If they don't have a key, then kill the function
-	if (not _dbEntryID) then
-		return
-	end
-	
-	setElementData(player, "roleplay:characters.weight", tonumber(getElementData(player, "roleplay:characters.weight"))-getItemWeight(itemID), true)
-	dbExec(exports['roleplay-accounts']:getSQLConnection(), "DELETE FROM `??` WHERE `??` = '??'", "inventory", "id", _dbEntryID)
-	outputServerLog("Items: Took item " .. getItemName(itemID) .. " (dbid: " .. _dbEntryID .. ", item id: " .. itemID .. ", type: " .. getItemType(itemID) .. ") from " .. getPlayerName(player) .. " [" .. exports['roleplay-accounts']:getAccountName(player) .. "].")
-	triggerClientEvent(player, ":_syncInventory_:", player, data[player].items)
-	
-	return true, _value
 end
 
-function hasItem(player, itemID, value, dbEntryID)
-	if (getItems()[itemID]) then
-		for i,v in pairs(data[player].items) do
-			if (tonumber(v[2]) == tonumber(itemID)) then
-				if (not value) then
-					return true, v[3]
-				else
-					if (value) and (tostring(v[3]) == tostring(value)) then
+function takeItem(element, itemID, value, dbEntryID)
+	if getElementType(element) == "player" then
+		local _dbEntryID
+		local _value
+		
+		if (data[element]) then
+			for i,v in pairs(data[element].items) do
+				if (data[element].items[i][2] == itemID) then
+					if (value) then
+						_value = value
 						if (not dbEntryID) then
-							return true
+							if (data[element].items[i][3] == value) then
+								_dbEntryID = data[element].items[i][1]
+								table.remove(data[element].items, i)
+								break
+							end
 						else
-							if (tostring(v[1]) == tostring(dbEntryID)) then
-								return true
+							if (data[element].items[i][1] == dbEntryID) then
+								_dbEntryID = dbEntryID
+								table.remove(data[element].items, i)
+								break
 							end
 						end
 					else
-						if (dbEntryID) then
-							if (tostring(v[1]) == tostring(dbEntryID)) then
-								return true, v[3]
+						_value = data[element].items[i][3]
+						_dbEntryID = data[element].items[i][1]
+						table.remove(data[element].items, i)
+						break
+					end
+				end
+			end
+		else
+			return false
+		end
+		
+		-- If they don't have a key, then kill the function
+		if (not _dbEntryID) then
+			return
+		end
+		
+		setElementData(element, "roleplay:characters.weight", tonumber(getElementData(element, "roleplay:characters.weight"))-getItemWeight(itemID), true)
+		dbExec(exports['roleplay-accounts']:getSQLConnection(), "DELETE FROM `??` WHERE `??` = '??'", "inventory", "id", _dbEntryID)
+		outputServerLog("Items: Took item " .. getItemName(itemID) .. " (dbid: " .. _dbEntryID .. ", item id: " .. itemID .. ", type: " .. getItemType(itemID) .. ") from " .. getPlayerName(element) .. " [" .. exports['roleplay-accounts']:getAccountName(element) .. "].")
+		triggerClientEvent(element, ":_syncInventory_:", element, data[element].items)
+		return true, _value
+	elseif getElementType(element) == "vehicle" then
+		local _value
+		local newinventory = getElementData(element,"roleplay:vehicles.inventory")
+		if (newinventory) then
+			for i,v in pairs(newinventory) do
+				if (newinventory[i][1] == itemID) then
+					if (value) then
+						_value = value
+						if (not dbEntryID) then
+							if (newinventory[i][2] == value) then
+								_dbEntryID = i
+								table.remove(newinventory, i)
+								break
+							end
+						else
+							if (i == dbEntryID) then
+								_dbEntryID = dbEntryID
+								table.remove(newinventory, i)
+								break
+							end
+						end
+					else
+						_value = newinventory[i][2]
+						_dbEntryID = i
+						table.remove(newinventory, i)
+						break
+					end
+				end
+			end
+		else
+			return false
+		end
+		
+		-- If they don't have a key, then kill the function
+		if (not _dbEntryID) then
+			return
+		end
+		setElementData(element,"roleplay:vehicles.inventory", newinventory, true )
+		setElementData(element, "roleplay:vehicles.weight", tonumber(getElementData(element, "roleplay:vehicles.weight"))-getItemWeight(itemID), true)
+		triggerEvent(":_saveVehicle_:",element)
+		outputServerLog("Items: Took item " .. getItemName(itemID) .. " (item id: " .. itemID .. ", type: " .. getItemType(itemID) .. ") from vehicle ID " .. exports['roleplay-vehicles']:getVehicleRealID(element) .. ".")
+		return true, _value
+	else
+		return false
+	end
+end
+
+function hasItem(element, itemID, value, dbEntryID)
+	if getElementType(element) == "player" then
+		if (getItems()[itemID]) then
+			for i,v in pairs(data[element].items) do
+				if (tonumber(v[2]) == tonumber(itemID)) then
+					if (not value) then
+						return true, v[3]
+					else
+						if (value) and (tostring(v[3]) == tostring(value)) then
+							if (not dbEntryID) then
+								return true
+							else
+								if (tostring(v[1]) == tostring(dbEntryID)) then
+									return true
+								end
+							end
+						else
+							if (dbEntryID) then
+								if (tostring(v[1]) == tostring(dbEntryID)) then
+									return true, v[3]
+								end
 							end
 						end
 					end
 				end
 			end
 		end
+		return false
+	elseif getElementType(element) == "vehicle" then
+		if (getItems()[itemID]) then
+			for i,v in pairs(getElementData(element,"roleplay:vehicles.inventory")) do
+				if (tonumber(v[1]) == tonumber(itemID)) then
+					if (not value) then
+						return true, v[2]
+					else
+						if (value) and (tostring(v[1]) == tostring(value)) then
+							if (not dbEntryID) then
+								return true
+							else
+								if (tostring(i) == tostring(dbEntryID)) then
+									return true
+								end
+							end
+						else
+							if (dbEntryID) then
+								if (tostring(i) == tostring(dbEntryID)) then
+									return true, v[2]
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+		return false
+	else
+		return false
 	end
-	return false
 end
 
 function getPlayerItemValue(player, itemID, dbEntryID)

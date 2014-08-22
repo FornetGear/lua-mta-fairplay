@@ -457,7 +457,7 @@ addEventHandler(":_initPurchase:VEH_:", root,
 
 addEvent(":_purchaseVehicle_:", true)
 addEventHandler(":_purchaseVehicle_:", root,
-	function(bankOrNot, vehicle)
+	function(bankOrNot, vehicle, transmission)
 		if (source ~= client) then return end
 		if (vehicle) and (isElement(vehicle)) then
 			local x, y, z = getElementPosition(client)
@@ -467,6 +467,17 @@ addEventHandler(":_purchaseVehicle_:", root,
 						outputChatBox("You need a valid driver's license in order to purchase this vehicle.", client, 245, 20, 20, false)
 						return
 					end
+					if (transmission == 0) then
+						if (not exports['roleplay-accounts']:hasAutomaticTransmission(source)) then
+							outputChatBox("You need a valid automatic transmission driver's license in order to purchase this vehicle.", client, 245, 20, 20, false)
+							return
+						end
+					else
+						if (not exports['roleplay-accounts']:hasManualTransmission(source)) then
+							outputChatBox("You need a valid manual transmission driver's license in order to purchase this vehicle.", client, 245, 20, 20, false)
+							return
+						end
+					end
 				end
 				
 				local ix, iy, iz = getElementPosition(vehicle)
@@ -475,7 +486,7 @@ addEventHandler(":_purchaseVehicle_:", root,
 					if (tonumber(getElementData(vehicle, "roleplay:vehicles.price")) <= (bankOrNot and exports['roleplay-banking']:getBankValue(client) or getPlayerMoney(client))) then
 						local rx, ry, rz = getElementRotation(vehicle)
 						local r1, g1, b1, r2, g2, b2 = getVehicleColor(vehicle, true)
-						local query = dbQuery(exports['roleplay-accounts']:getSQLConnection(), "INSERT INTO `??` (`??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`) VALUES ('??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??')", "vehicles", "modelid", "posX", "posY", "posZ", "rotX", "rotY", "rotZ", "interior", "dimension", "rPosX", "rPosY", "rPosZ", "rRotX", "rRotY", "rRotZ", "respawnInterior", "respawnDimension", "color1", "color2", "userID", "created", getElementModel(vehicle), ix, iy, iz, rx, ry, rz, interior, dimension, ix, iy, iz, rx, ry, rz, interior, dimension, toJSON({r1, g1, b1}), toJSON({r2, g2, b2}), exports['roleplay-accounts']:getCharacterID(client), getRealTime().timestamp)
+						local query = dbQuery(exports['roleplay-accounts']:getSQLConnection(), "INSERT INTO `??` (`??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`, `??`) VALUES ('??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??', '??','??')", "vehicles", "modelid", "posX", "posY", "posZ", "rotX", "rotY", "rotZ", "interior", "dimension", "rPosX", "rPosY", "rPosZ", "rRotX", "rRotY", "rRotZ", "respawnInterior", "respawnDimension", "color1", "color2", "userID", "created","manualGearbox", getElementModel(vehicle), ix, iy, iz, rx, ry, rz, interior, dimension, ix, iy, iz, rx, ry, rz, interior, dimension, toJSON({r1, g1, b1}), toJSON({r2, g2, b2}), exports['roleplay-accounts']:getCharacterID(client), getRealTime().timestamp,transmission)
 						if (query) then
 							local result, num_affected_rows, last_insert_id = dbPoll(query, -1)
 							local x = x+((math.cos(math.rad(rz)))*3)
@@ -491,7 +502,7 @@ addEventHandler(":_purchaseVehicle_:", root,
 							outputChatBox("Congratulations! You've bought this " .. getVehicleName(vehicle) .. " for " .. exports['roleplay-banking']:getFormattedValue(getElementData(vehicle, "roleplay:vehicles.price")) .. " USD.", client, 20, 245, 20, false)
 							outputServerLog("Vehicles: " .. getPlayerName(client) .. " [" .. exports['roleplay-accounts']:getAccountName(client) .. "] bought " .. getVehicleName(vehicle) .. " (" .. getElementModel(vehicle) .. ") for " .. exports['roleplay-banking']:getFormattedValue(getElementData(vehicle, "roleplay:vehicles.price")) .. " USD (" .. (bankOrNot and "by bank" or "by cash") .. ") (dbEntryID: " .. last_insert_id .. ").")
 							
-							exports['roleplay-vehicles']:addVehicle(last_insert_id, getElementModel(vehicle), ix, iy, iz, rx, ry, rz, getElementInterior(vehicle), getElementDimension(vehicle), ix, iy, iz, rx, ry, rz, getElementInterior(vehicle), getElementDimension(vehicle), 1, exports['roleplay-accounts']:getCharacterID(client), toJSON({r1, g1, b1}), toJSON({r2, g2, b2}), 0, 0, 0, 0, 0, 1000, 100, 1)
+							exports['roleplay-vehicles']:addVehicle(last_insert_id, getElementModel(vehicle), ix, iy, iz, rx, ry, rz, getElementInterior(vehicle), getElementDimension(vehicle), ix, iy, iz, rx, ry, rz, getElementInterior(vehicle), getElementDimension(vehicle), 1, exports['roleplay-accounts']:getCharacterID(client), toJSON({r1, g1, b1}), toJSON({r2, g2, b2}), 0, 0, 0, 0, 0, 1000, 100, 1,transmission)
 							exports['roleplay-items']:giveItem(client, 7, last_insert_id)
 							
 							for i,v in ipairs(getElementChildren(vehicle, "marker")) do

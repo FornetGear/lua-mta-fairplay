@@ -26,7 +26,7 @@ local iMaxBoxes = 15
 local iMinBoxes = 1
 local iScrollAmount = 3
 local bForceDisappear = false
-local isShowing = false
+isShowing = false
 
 local fBoardWidth = 536
 local fBoardHeight = 572
@@ -76,7 +76,7 @@ function dxDisplayScoreboard()
 	
 	-- Headers
 	dxDrawText(#getElementsByType("player") .. "/100", ((sx-fBoxWidth+fBoxTextMargin)/2)+10, (sy-fBoxWidth+fBoxTextMargin)/2-25, (sx-fBoxWidth-dxGetTextWidth(#getElementsByType("player") .. "/100", fBoxTextScale, sBoxTextFont)*fBoxTextScale-fBoxTextMargin*4)/2+dxGetTextWidth(#getElementsByType("player") .. "/100", fBoxTextScale, sBoxTextFont)*fBoxTextScale+fBoardWidth-fBoxTextMargin-30, (sy-fBoxWidth+fBoxTextMargin)/2+dxGetFontHeight(fBoxTextScale, sBoxTextFont)*fBoxTextScale*50, tocolor(245, 245, 245, 0.65*255), fBoxTextScale, sBoxTextFont, "left", "top", bBoxTextClip, bBoxTextWordBreak, bPostGUI, bBoxTextColorCoded, bBoxTextSubPixelPos)
-	dxDrawText("FairPlay: MTA Roleplay - Public Beta", (sx-fBoxWidth+fBoxTextMargin)/2, (sy-fBoxWidth+fBoxTextMargin)/2-25, (sx-fBoxWidth-dxGetTextWidth("FairPlay: MTA Roleplay - Public Beta", fBoxTextScale, sBoxTextFont)*fBoxTextScale-fBoxTextMargin*4)/2+dxGetTextWidth("FairPlay: MTA Roleplay - Public Beta", fBoxTextScale, sBoxTextFont)*fBoxTextScale+fBoardWidth-fBoxTextMargin-37, (sy-fBoxWidth+fBoxTextMargin)/2+dxGetFontHeight(fBoxTextScale, sBoxTextFont)*fBoxTextScale*50, tocolor(245, 245, 245, 0.65*255), fBoxTextScale, sBoxTextFont, "right", "top", bBoxTextClip, bBoxTextWordBreak, bPostGUI, bBoxTextColorCoded, bBoxTextSubPixelPos)
+	dxDrawText("FairPlay: MTA Roleplay", (sx-fBoxWidth+fBoxTextMargin)/2, (sy-fBoxWidth+fBoxTextMargin)/2-25, (sx-fBoxWidth-dxGetTextWidth("FairPlay: MTA Roleplay", fBoxTextScale, sBoxTextFont)*fBoxTextScale-fBoxTextMargin*4)/2+dxGetTextWidth("FairPlay: MTA Roleplay", fBoxTextScale, sBoxTextFont)*fBoxTextScale+fBoardWidth-fBoxTextMargin-37, (sy-fBoxWidth+fBoxTextMargin)/2+dxGetFontHeight(fBoxTextScale, sBoxTextFont)*fBoxTextScale*50, tocolor(245, 245, 245, 0.65*255), fBoxTextScale, sBoxTextFont, "right", "top", bBoxTextClip, bBoxTextWordBreak, bPostGUI, bBoxTextColorCoded, bBoxTextSubPixelPos)
 	dxDrawText("ID", (sx-fBoxWidth+fBoxTextMargin)/2+10, (sy-fBoxWidth+fBoxTextMargin)/2, (sx-fBoxWidth-dxGetTextWidth("ID", fBoxTextScale, sBoxTextFont)*fBoxTextScale-fBoxTextMargin*4)/2+dxGetTextWidth("ID", fBoxTextScale, sBoxTextFont)*fBoxTextScale+fBoardWidth-fBoxTextMargin, (sy-fBoxWidth+fBoxTextMargin)/2+dxGetFontHeight(fBoxTextScale, sBoxTextFont)*fBoxTextScale*50, tocolor(245, 245, 245, 0.65*255), fBoxTextScale, sBoxTextFont, sBoxTextAlignX, sBoxTextAlignY, bBoxTextClip, bBoxTextWordBreak, bPostGUI, bBoxTextColorCoded, bBoxTextSubPixelPos)
 	dxDrawText("Name", (sx-fBoxWidth+fBoxTextMargin)/2+40, (sy-fBoxWidth+fBoxTextMargin)/2, (sx-fBoxWidth-dxGetTextWidth("Name", fBoxTextScale, sBoxTextFont)*fBoxTextScale-fBoxTextMargin*4)/2+dxGetTextWidth("Name", fBoxTextScale, sBoxTextFont)*fBoxTextScale+fBoardWidth-fBoxTextMargin, (sy-fBoxWidth+fBoxTextMargin)/2+dxGetFontHeight(fBoxTextScale, sBoxTextFont)*fBoxTextScale*50, tocolor(245, 245, 245, 0.65*255), fBoxTextScale, sBoxTextFont, sBoxTextAlignX, sBoxTextAlignY, bBoxTextClip, bBoxTextWordBreak, bPostGUI, bBoxTextColorCoded, bBoxTextSubPixelPos)
 	dxDrawText("Ping", (sx+fBoxWidth+fBoxTextMargin)/2-fBoxTextMargin-35, (sy-fBoxWidth+fBoxTextMargin)/2, sx, sy, tocolor(245, 245, 245, 0.65*255), fBoxTextScale, sBoxTextFont, sBoxTextAlignX, sBoxTextAlignY, bBoxTextClip, bBoxTextWordBreak, bPostGUI, bBoxTextColorCoded, bBoxTextSubPixelPos)
@@ -170,6 +170,13 @@ local function updateCache()
 	end
 end
 
+
+addEventHandler(":_ScoreBoardupdatePlayerNick_:",root,
+	function()
+		tPlayers[exports['roleplay-accounts']:getClientID(source)][2] = getPlayerName(source)
+	end
+)
+
 addEventHandler("onClientResourceStart", resourceRoot,
 	function()
 		bindKey("mouse_wheel_up", "down", scrollScoreboardUp)
@@ -177,7 +184,7 @@ addEventHandler("onClientResourceStart", resourceRoot,
 		bindKey("tab", "both", toggleScoreboard)
 		triggerServerEvent(":_doGetServerName_:", localPlayer)
 		updateCache()
-		setTimer(updateCache, 3500, 0)
+		setTimer(updateCache, 1000, 0)
 	end
 )
 
@@ -191,15 +198,22 @@ addEventHandler("onClientResourceStop", resourceRoot,
 
 addEvent(":_updateScoreboardBind_:", true)
 addEventHandler(":_updateScoreboardBind_:", root,
-	function(unbindOrNot)
-		if (unbindOrNot) then
-			unbindKey("mouse_wheel_up", "down", scrollScoreboardUp)
-			unbindKey("mouse_wheel_down", "down", scrollScoreboardDown)
-			unbindKey("tab", "both", toggleScoreboard)
-		else
+	function()
+		for _,v in ipairs(getFunctionsBoundToKey("tab")) do --loop through the key bounded functions
+			if(v == toggleScoreboard) then
+				unbindKey("mouse_wheel_up", "down", scrollScoreboardUp)
+				unbindKey("mouse_wheel_down", "down", scrollScoreboardDown)
+				unbindKey("tab", "both", toggleScoreboard)
+			else
+				bindKey("mouse_wheel_up", "down", scrollScoreboardUp)
+				bindKey("mouse_wheel_down", "down", scrollScoreboardDown)
+				bindKey("tab", "both", toggleScoreboard)
+			end
+		end
+		if (#getFunctionsBoundToKey("tab") == 0) then
 			bindKey("mouse_wheel_up", "down", scrollScoreboardUp)
-			bindKey("mouse_wheel_down", "down", scrollScoreboardDown)
-			bindKey("tab", "both", toggleScoreboard)
+				bindKey("mouse_wheel_down", "down", scrollScoreboardDown)
+				bindKey("tab", "both", toggleScoreboard)
 		end
 	end
 )

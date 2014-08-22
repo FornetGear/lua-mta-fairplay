@@ -17,6 +17,12 @@
 	(c) Copyright 2014 FairPlay Gaming. All rights reserved.
 ]]
 
+
+function tocolor( r, g, b, a )
+    a = tonumber( a ) or 255
+    return tonumber( string.format( "0x%X%X%X%X", a, r, g, b ) )
+end
+
 local bike = {[581]=true, [509]=true, [481]=true, [462]=true, [521]=true, [463]=true, [510]=true, [522]=true, [461]=true, [448]=true, [468]=true, [586]=true, [536]=true, [575]=true, [567]=true, [480]=true, [555]=true}
 local windowless = {[568]=true, [601]=true, [424]=true, [457]=true, [480]=true, [485]=true, [486]=true, [528]=true, [530]=true, [531]=true, [532]=true, [571]=true, [572]=true}
 local roofless = {[568]=true, [500]=true, [439]=true, [424]=true, [457]=true, [480]=true, [485]=true, [486]=true, [530]=true, [531]=true, [533]=true, [536]=true, [555]=true, [571]=true, [572]=true, [575]=true}
@@ -116,7 +122,7 @@ function outputLocalChat(player, message, fdistance)
 			if (theDistance < 60) then
 				if (exports['roleplay-vehicles']:isPlayerRealInVehicle(player)) then
 					if (exports['roleplay-accounts']:isClientTrialAdmin(v)) and (exports['roleplay-accounts']:getAdminState(v) == 1) then
-						triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player)
+						triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player, tocolor(255,255,255))
 						outputLongChatBox(" " .. prefix .. (bike[getElementModel(vehicle)] and "(On Bike" or "(In " .. (getVehicleType(vehicle) == "Automobile" and "Car" or getVehicleType(vehicle))) .. ") [" .. getLanguageName(senderLang) .. "] " .. exports['roleplay-accounts']:getRealPlayerName(player) .. " says: " .. firstLetter .. restMessage, v, r, g, b, false)
 						if (affected == "") then
 							affected = getPlayerName(v)
@@ -125,7 +131,7 @@ function outputLocalChat(player, message, fdistance)
 						end
 					else
 						if (exports['roleplay-vehicles']:isVehicleWindowsDown(vehicle)) or (bike[getElementModel(vehicle)]) or (windowless[getElementModel(vehicle)]) or (roofless[getElementModel(vehicle)]) then
-							triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player)
+							triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player, tocolor(255,255,255))
 							outputLongChatBox(" " .. prefix .. (bike[getElementModel(vehicle)] and "(On Bike" or "(In " .. (getVehicleType(vehicle) == "Automobile" and "Car" or getVehicleType(vehicle))) .. ") " .. exports['roleplay-accounts']:getRealPlayerName(player) .. " says: " .. firstLetter .. restMessage, v, r, g, b, false)
 							if (affected == "") then
 								affected = getPlayerName(v)
@@ -134,7 +140,7 @@ function outputLocalChat(player, message, fdistance)
 							end
 						else
 							if (getPedOccupiedVehicle(v) and getPedOccupiedVehicle(v) == vehicle) then
-								triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player)
+								triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player, tocolor(255,255,255))
 								outputLongChatBox(" " .. prefix .. (bike[getElementModel(vehicle)] and "(On Bike" or "(In " .. (getVehicleType(vehicle) == "Automobile" and "Car" or getVehicleType(vehicle))) .. ") " .. exports['roleplay-accounts']:getRealPlayerName(player) .. " says: " .. firstLetter .. restMessage, v, r, g, b, false)
 								if (affected == "") then
 									affected = getPlayerName(v)
@@ -148,7 +154,7 @@ function outputLocalChat(player, message, fdistance)
 					if (exports['roleplay-vehicles']:isPlayerRealInVehicle(v)) then
 						local vehicle = getPedOccupiedVehicle(v)
 						if (exports['roleplay-accounts']:isClientTrialAdmin(v)) and (exports['roleplay-accounts']:getAdminState(v) == 1) then
-							triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player)
+							triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player, tocolor(255,255,255))
 							outputLongChatBox(" " .. prefix .. (bike[getElementModel(vehicle)] and "(On Bike" or "(In " .. (getVehicleType(vehicle) == "Automobile" and "Car" or getVehicleType(vehicle))) .. ") [" .. getLanguageName(senderLang) .. "] " .. exports['roleplay-accounts']:getRealPlayerName(player) .. " says: " .. firstLetter .. restMessage, v, r, g, b, false)
 							if (affected == "") then
 								affected = getPlayerName(v)
@@ -158,7 +164,7 @@ function outputLocalChat(player, message, fdistance)
 						else
 							if (exports['roleplay-vehicles']:isVehicleWindowsDown(vehicle)) or (bike[getElementModel(vehicle)]) or (windowless[getElementModel(vehicle)]) or (roofless[getElementModel(vehicle)]) then
 								if (getPedOccupiedVehicle(player) and getPedOccupiedVehicle(player) == vehicle) then
-									triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player)
+									triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player, tocolor(255,255,255))
 									outputLongChatBox(" " .. prefix .. (bike[getElementModel(vehicle)] and "(On Bike" or "(In " .. (getVehicleType(vehicle) == "Automobile" and "Car" or getVehicleType(vehicle))) .. ") " .. exports['roleplay-accounts']:getRealPlayerName(player) .. " says: " .. firstLetter .. restMessage, v, r, g, b, false)
 									if (affected == "") then
 										affected = getPlayerName(v)
@@ -166,7 +172,7 @@ function outputLocalChat(player, message, fdistance)
 										affected = affected .. ";" .. getPlayerName(v)
 									end
 								else
-									triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player)
+									triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player, tocolor(255,255,255))
 									outputLongChatBox(" " .. prefix .. exports['roleplay-accounts']:getRealPlayerName(player) .. " says: " .. firstLetter .. restMessage, v, r, g, b, false)
 									if (affected == "") then
 										affected = getPlayerName(v)
@@ -178,7 +184,7 @@ function outputLocalChat(player, message, fdistance)
 						end
 					else
 						if (exports['roleplay-accounts']:isClientTrialAdmin(v)) and (exports['roleplay-accounts']:getAdminState(v) == 1) then
-							triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player)
+							triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player,  tocolor(255,255,255))
 							outputLongChatBox(" " .. prefix .. "[" .. getLanguageName(senderLang) .. "] " .. exports['roleplay-accounts']:getRealPlayerName(player) .. " says: " .. firstLetter .. restMessage, v, r, g, b, false)
 							if (affected == "") then
 								affected = getPlayerName(v)
@@ -186,7 +192,7 @@ function outputLocalChat(player, message, fdistance)
 								affected = affected .. ";" .. getPlayerName(v)
 							end
 						else
-							triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player)
+							triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player, tocolor(255,255,255))
 							outputLongChatBox(" " .. prefix .. exports['roleplay-accounts']:getRealPlayerName(player) .. " says: " .. firstLetter .. restMessage, v, r, g, b, false)
 							if (affected == "") then
 								affected = getPlayerName(v)
@@ -198,7 +204,7 @@ function outputLocalChat(player, message, fdistance)
 				end
 			elseif (theDistance == 60) then
 				if (exports['roleplay-accounts']:isClientTrialAdmin(v)) and (exports['roleplay-accounts']:getAdminState(v) == 1) then
-					triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player)
+					triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player, tocolor(255,255,255))
 					outputLongChatBox(" " .. prefix .. "[" .. getLanguageName(senderLang) .. "] " .. exports['roleplay-accounts']:getRealPlayerName(player) .. " says: " .. firstLetter .. restMessage, v, 245, 210, 25, false)
 					if (affected == "") then
 						affected = getPlayerName(v)
@@ -206,7 +212,7 @@ function outputLocalChat(player, message, fdistance)
 						affected = affected .. ";" .. getPlayerName(v)
 					end
 				else
-					triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player)
+					triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player, tocolor(255,255,255))
 					outputLongChatBox(" " .. prefix .. exports['roleplay-accounts']:getRealPlayerName(player) .. " says: " .. firstLetter .. restMessage, v, 245, 210, 25, false)
 					if (affected == "") then
 						affected = getPlayerName(v)
@@ -219,7 +225,7 @@ function outputLocalChat(player, message, fdistance)
 					local frequency = string.gsub(fdistance, "r", "")
 					if (exports['roleplay-items']:hasItem(v, 13, frequency)) or (getDistanceBetweenPoints3D(px, py, pz, x, y, z) <= 20) then
 						if (exports['roleplay-accounts']:isClientTrialAdmin(v)) and (exports['roleplay-accounts']:getAdminState(v) == 1) then
-							triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player)
+							triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player, tocolor(255,255,255))
 							outputLongChatBox(" [#" .. frequency .. "] [" .. getLanguageName(senderLang) .. "] " .. exports['roleplay-accounts']:getRealPlayerName(player) .. " says: " .. firstLetter .. restMessage, v, 75, 75, 200, false)
 							if (affected == "") then
 								affected = frequency .. ";" .. getPlayerName(v)
@@ -227,7 +233,7 @@ function outputLocalChat(player, message, fdistance)
 								affected = affected .. ";" .. getPlayerName(v)
 							end
 						else
-							triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player)
+							triggerClientEvent(v, ":_displayChatBubble_:", v, firstLetter .. restMessage, player, tocolor(255,255,255))
 							outputLongChatBox(" [#" .. frequency .. "] " .. exports['roleplay-accounts']:getRealPlayerName(player) .. " says: " .. firstLetter .. restMessage, v, 75, 75, 200, false)
 							if (affected == "") then
 								affected = frequency .. ";" .. getPlayerName(v)
@@ -296,7 +302,7 @@ function outputLocalOOCChat(player, message)
 		local px, py, pz = getElementPosition(v)
 		local distance = getDistanceBetweenPoints3D(px, py, pz, x, y, z)
 		if (distance < 30 and getElementInterior(v) == getElementInterior(player) and getElementDimension(v) == getElementDimension(player)) then
-			outputLongChatBox(" [OOC] (" .. exports['roleplay-accounts']:getClientID(player) .. ") " .. exports['roleplay-accounts']:getRealPlayerName(player) .. ": " .. message:gsub("  ", " "), v, 100, 150, 210, false)
+			outputLongChatBox(" [LOOC] (" .. exports['roleplay-accounts']:getClientID(player) .. ") " .. exports['roleplay-accounts']:getRealPlayerName(player) .. ": " .. message:gsub("  ", " "), v, 100, 150, 210, false)
 			if (affected == "") then
 				affected = getPlayerName(v)
 			else
@@ -380,6 +386,26 @@ function outputMegaphone(player, message)
 		end
 		
 		outputLocalChat(player, message, 60)
+	else
+		local vehicle = getPedOccupiedVehicle(player)
+		if vehicle then
+			if exports['roleplay-items']:hasItem(vehicle,14) then
+				local words = split(message, " ")
+				if (words) then
+					for i,v in pairs(words) do
+						if (veryIllegalWords[v:lower()]) then
+							outputChatBox("Your message was skipped because it contained illegal characters.", player, 245, 20, 20, false)
+							exports['roleplay-accounts']:outputAdminLog(getPlayerName(player):gsub("_", " ") .. " tried to local megaphone a potential advertisement/threat message! Message skipped.", 3)
+							exports['roleplay-accounts']:outputAdminLog("Message: " .. message, 3)
+							exports['roleplay-logging']:insertLog(player, 20, getPlayerName(player), "SKIPPED!: " .. message:gsub("  ", " "))
+							return
+						end
+					end
+				end
+				
+				outputLocalChat(player, message, 60)
+			end
+		end
 	end
 end
 
@@ -463,7 +489,15 @@ function outputLocalActionMe(player, action)
 		local px, py, pz = getElementPosition(v)
 		local distance = getDistanceBetweenPoints3D(px, py, pz, x, y, z)
 		if (distance < 30 and getElementInterior(player) == getElementInterior(v) and getElementDimension(player) == getElementDimension(v)) then
-			outputLongChatBox(" *" .. exports['roleplay-accounts']:getRealPlayerName(player) .. " " .. action:gsub("  ", " "), v, 237, 116, 136, false)
+			math.randomseed( getTickCount() )
+			local randomstar = math.random(0,1)
+			if randomstar == 1 then
+				outputLongChatBox(" ✪" .. exports['roleplay-accounts']:getRealPlayerName(player) .. " " .. action:gsub("  ", " "), v, 237, 116, 136, false)
+				triggerClientEvent(v, ":_displayChatBubble_:", v," ✪" .. exports['roleplay-accounts']:getRealPlayerName(player) .. " " .. action:gsub("  ", " "), player, tocolor(237,116,136))
+			else
+				outputLongChatBox(" ★" .. exports['roleplay-accounts']:getRealPlayerName(player) .. " " .. action:gsub("  ", " "), v, 237, 116, 136, false)
+				triggerClientEvent(v, ":_displayChatBubble_:", v," ★" .. exports['roleplay-accounts']:getRealPlayerName(player) .. " " .. action:gsub("  ", " "), player, tocolor(237,116,136))
+			end
 			if (affected == "") then
 				affected = getPlayerName(v)
 			else
@@ -787,7 +821,20 @@ addCommandHandler({"m", "mega", "megaphone", "mphone"},
 					outputChatBox("You are currently muted. Please wait for instructions from an Administrator.", player, 245, 20, 20, false)
 				end
 			else
-				outputChatBox("You kind of need a megaphone to use one, right?", player, 245, 20, 20, false)
+				local vehicle = getPedOccupiedVehicle(player)
+				if vehicle then
+					if (exports['roleplay-items']:hasItem(vehicle, 14)) then
+						if (not isPlayerMuted(player)) then
+							outputMegaphone(player, message)
+						else
+							outputChatBox("You are currently muted. Please wait for instructions from an Administrator.", player, 245, 20, 20, false)
+						end
+					else
+						outputChatBox("You kind of need a megaphone to use one, right?", player, 245, 20, 20, false)
+					end
+				else
+					outputChatBox("You kind of need a megaphone to use one, right?", player, 245, 20, 20, false)
+				end
 			end
 		else
 			outputChatBox("SYNTAX: /" .. cmd .. " <message>", player, 210, 160, 25, false)

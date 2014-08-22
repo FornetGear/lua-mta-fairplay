@@ -64,7 +64,7 @@ addCommandHandler({"announce", "announcement", "ann"},
 addCommandHandler({"fulllock", "lockserver", "lockdown"},
 	function(player, cmd)
 		local account = getPlayerAccount(player)
-		if (not account) or (getAccountName(account) ~= "Socialz") then return end
+		if (not account) or (getAccountName(account) ~= "Gomitung") then return end
 		for i,v in ipairs(getElementsByType("player")) do
 			setElementPosition(v, 0, 0, 0)
 			setElementFrozen(v, true)

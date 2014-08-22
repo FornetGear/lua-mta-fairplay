@@ -166,7 +166,7 @@ addCommandHandler({"addvehicle", "createvehicle", "makevehicle", "makeveh", "cre
 				
 				if (query) then
 					local result, num_affected_rows, last_insert_id = dbPoll(query, -1)
-					exports['roleplay-vehicles']:addVehicle(last_insert_id, _model, x, y, z, 0, 0, rotation, interior, dimension, x, y, z, 0, 0, rotation, interior, dimension, 0, (faction == 1 and -owner or exports['roleplay-accounts']:getCharacterID(target)), "[ [ 0, 0, 0 ] ]", "[ [ 0, 0, 0 ] ]", 0, 0, 0, 0, 0, 1000, 100, 0, "[ [ 0, 0, 0, 0, 0, 0, 0 ] ]", "[ [ 0, 0, 0, 0, 0, 0 ] ]", "[ [ 0, 0, 0, 0 ] ]", 0, 0)
+					exports['roleplay-vehicles']:addVehicle(last_insert_id, _model, x, y, z, 0, 0, rotation, interior, dimension, x, y, z, 0, 0, rotation, interior, dimension, 0, (faction == 1 and -owner or exports['roleplay-accounts']:getCharacterID(target)), "[ [ 0, 0, 0 ] ]", "[ [ 0, 0, 0 ] ]", 0, 0, 0, 0, 0, 1000, 100, 0, 1, "[ [ 0, 0, 0, 0, 0, 0, 0 ] ]", "[ [ 0, 0, 0, 0, 0, 0 ] ]", "[ [ 0, 0, 0, 0 ] ]", 0, 0)
 					
 					if (faction == 0) then
 						exports['roleplay-banking']:takeBankValue(target, cost)
@@ -1033,7 +1033,7 @@ addCommandHandler({"respawnvehs", "respawnallvehs", "respawnall", "respawnvehicl
 					end
 				end
 				
-				outputServerLog("Admin-Vehicle: " .. name .. " [" .. accounts .. "] respawned all vehicles.")
+				outputServerLog("Admin-Vehicle: " .. name .. " [" .. account .. "] respawned all vehicles.")
 			end, seconds*1000, 1, getPlayerName(player), exports['roleplay-accounts']:getAccountName(player))
 			
 			outputServerLog("Admin-Vehicle: " .. getPlayerName(player) .. " [" .. exports['roleplay-accounts']:getAccountName(player) .. "] executed the /" .. cmd .. " command - respawn pending at " .. seconds .. " seconds.")

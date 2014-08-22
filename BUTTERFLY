@@ -1,0 +1,45 @@
+Butterfly by Miguel Santos (Gomitung)
+
+
+NAME INSPIRED ON:
+
+A beautifull angel that is my girlfriend.
+
+CHANGELOG:
+
+
+Removed initializer due to black screen on login.
+Added car radio, vehicle inventory, car shop compatibility with transmissions licenses,added a protection that forces a player to be at 0KM/h before changing the gear to Reverse, and more that I can't remember.
+
+
+WARNINGS:
+
+Remember to update your mysql database and your mtaserver.conf.
+
+SET YOURSELF AS ADMIN:
+
+Go to the file shared_exports.lua at resources\roleplay-accounts\exports and edit the poweruserID to your DB account ID. Default set to 0 (no-one).
+
+CONTACTS:
+
+Miguel Santos (Gomitung) - https://github.com/Gomitung
+
+
+DONATIONS:
+
+If you are willing to donate please ahead to the following web address:
+https://donate.doctorswithoutborders.org/onetime.cfm
+
+Doctors Without Borders
+They need the money more than me.
+
+
+SOFTWARE USED:
+
+CentOS - http://www.centos.org/
+MariaDB - https://mariadb.com/
+NGINX - http://nginx.org/
+Sublime Text - http://www.sublimetext.com/
+FileZilla - https://filezilla-project.org/
+Navicat - http://www.navicat.com/
+MTA SA 1.4 - http://mtasa.com/

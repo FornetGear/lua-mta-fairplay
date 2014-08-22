@@ -1,10 +1,47 @@
 ## FairPlay Gaming MTA
 ### Installation
 
-Simply place all the resources into your `resources` folder. After that you have to go into your `mtaserver.conf` and add the following line.
+Simply place all the resources into your `resources` folder. After that you have to go into your `mtaserver.conf` and add the following lines.
 
 ```lua
-<resource src="roleplay-initializer" startup="1" default="true" protected="1" />
+	<resource src="roleplay-accounts" startup="1" protected="0" />
+    <resource src="roleplay-admin" startup="1" protected="0" />
+    <resource src="roleplay-animations" startup="1" protected="0" />
+    <resource src="roleplay-anticheat" startup="1" protected="0" />
+    <resource src="roleplay-banking" startup="1" protected="0" />
+    <resource src="roleplay-chat" startup="1" protected="0" />
+    <resource src="roleplay-dmv" startup="1" protected="0" />
+    <resource src="roleplay-dofbokeh" startup="1" protected="0" />
+    <resource src="roleplay-donators" startup="1" protected="0" />
+    <resource src="roleplay-drugs" startup="1" protected="0" />
+    <resource src="roleplay-emergency" startup="1" protected="0" />
+    <resource src="roleplay-factions" startup="1" protected="0" />
+    <resource src="roleplay-fancy" startup="1" protected="0" />
+    <resource src="roleplay-gates" startup="1" protected="0" />
+    <resource src="roleplay-gearbox" startup="1" protected="0" />
+    <resource src="roleplay-interiors" startup="1" protected="0" />
+    <resource src="roleplay-inventory" startup="1" protected="0" />
+    <resource src="roleplay-items" startup="1" protected="0" />
+    <resource src="roleplay-jobs" startup="1" protected="0" />
+    <resource src="roleplay-logging" startup="1" protected="0" />
+    <resource src="roleplay-maps" startup="1" protected="0" />
+    <resource src="roleplay-notifications" startup="1" protected="0" />
+    <resource src="roleplay-pd" startup="1" protected="0" />
+    <resource src="roleplay-phone" startup="1" protected="0" />
+    <resource src="roleplay-realism" startup="1" protected="0" />
+    <resource src="roleplay-scoreboard" startup="1" protected="0" />
+    <resource src="roleplay-settings" startup="1" protected="0" />
+    <resource src="roleplay-shaders" startup="1" protected="0" />
+    <resource src="roleplay-shop" startup="1" protected="0" />
+    <resource src="roleplay-utilities" startup="1" protected="0" />
+    <resource src="roleplay-vehiclefuel" startup="1" protected="0" />
+    <resource src="roleplay-vehiclenodes" startup="1" protected="0" />
+    <resource src="roleplay-vehicles" startup="1" protected="0" />
+    <resource src="roleplay-vehicleshop" startup="1" protected="0" />
+    <resource src="roleplay-vehicleradio" startup="1" protected="0" />
+    <resource src="roleplay-weapons" startup="1" protected="0" />
+    <resource src="roleplay-weather" startup="1" protected="0" />
+    
 ```
 
 Make sure you set the MySQL configuration in `roleplay-accounts/s_accounts.lua` file. If you want to synchronize data properly with a web server (used for player tracking and real-time weather synchronization), add your server information into `roleplay-accounts/s_webserver.lua`. Make sure you've uploaded web files into your website as well. You can set the server address in `roleplay-weather/s_weather.lua`, and `roleplay-accounts/s_sync.lua` where the `sendPlayerAmount` function calls for a remote page. These are by default set to the public API URL address hosted by FairPlay Gaming, meaning you will not need to have a website unless you want to update your player count to a website and then display it on your forums for example - my website is not storing that data anywhere for obvious reasons.

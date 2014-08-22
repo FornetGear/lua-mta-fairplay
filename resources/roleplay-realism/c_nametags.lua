@@ -20,7 +20,9 @@
 local sx, sy = guiGetScreenSize()
 local fMaxDistance = 16.5
 local bSubPixelPositioning = false
+local altpressed = false
 
+local font = dxCreateFont("nametags.ttf",14)
 addEventHandler("onClientRender", root,
 	function()
 		if (not exports['roleplay-accounts']:isClientPlaying(localPlayer)) then return end
@@ -39,27 +41,38 @@ addEventHandler("onClientRender", root,
 							
 							if (not collision) then
 								local hx, hy, hz = getPedBonePosition(v, 7)
-								local wsx, wsy = getScreenFromWorldPosition(hx, hy, hz+0.3, 100, false)
+								local wsx, wsy = 0, 0
+								if (getPedOccupiedVehicle(v)) then
+									wsx, wsy = getScreenFromWorldPosition(hx, hy, hz+0.7, 100, false)
+								else
+									wsx, wsy = getScreenFromWorldPosition(hx, hy, hz+0.3, 100, false)
+								end
 								
 								if (wsx) and (wsy) then
 									local color = ((exports['roleplay-accounts']:getAdminLevel(v) > 0) and (exports['roleplay-accounts']:getAdminState(v) == 1) and (not exports['roleplay-accounts']:isClientHidden(v)) and tocolor(245, 215, 65, 0.9*255) or tocolor(245, 245, 245, 0.9*255))
-									local name = "[" .. exports['roleplay-accounts']:getClientID(v) .. "] " .. getPlayerName(v):gsub("_", " ")
+									local name = "Contact Developers Team"
+									if altpressed  then
+										name = exports['roleplay-accounts']:getClientID(v)										
+									else
+										name = getPlayerName(v):gsub("_", " ")
+									end
 									
 									if (isPedInVehicle(v)) then
 										local vehicle = getPedOccupiedVehicle(v)
 										if (vehicle) then
 											if (exports['roleplay-vehicles']:isVehicleTinted(vehicle)) then
 												if (getVehicleOccupant(vehicle, 0) ~= v) and (getVehicleOccupant(vehicle, 1) ~= v) then
-													name = "[" .. exports['roleplay-accounts']:getClientID(v) .. "] Unknown (Tinted Windows)"
+													if not altpressed  then
+														name = "Unknown (Tinted Windows)"
+													end
 												end
 											end
 										end
 									end
 									
-									wsx = ((wsx-((dxGetTextWidth(name, 1.0, "clear")+10)/2))-5)
+									wsx = ((wsx-((dxGetTextWidth(name, 1.0, font)+10)/2))-5)
 									
-									dxDrawRectangle(wsx, wsy, dxGetTextWidth(name, 1.0, "clear")+10, dxGetFontHeight(1.0, "clear")+6, tocolor(0, 0, 0, 0.7*255), false)
-									dxDrawText(name, wsx+5, wsy+3, sx, sy, color, 1.0, "clear", "left", "top", true, false, false, false, bSubPixelPositioning)
+									dxDrawText(name, wsx+5, wsy+3, sx, sy, color, 1.0, font, "left", "top", true, false, false, false, bSubPixelPositioning)
 								end
 							end
 						end
@@ -79,15 +92,20 @@ addEventHandler("onClientRender", root,
 					
 					if (not collision) then
 						local hx, hy, hz = getPedBonePosition(v, 7)
-						local wsx, wsy = getScreenFromWorldPosition(hx, hy, hz+0.3, 100, false)
+						local wsx, wsy = 0, 0
+						if (getPedOccupiedVehicle(v)) then
+							wsx, wsy = getScreenFromWorldPosition(hx, hy, hz+0.7, 100, false)
+						else
+							wsx, wsy = getScreenFromWorldPosition(hx, hy, hz+0.3, 100, false)
+						end
 						
 						if (wsx) and (wsy) then
 							if (getElementData(v, "roleplay:peds.name")) then
-								local name
+								local name = ""
 								if (getElementData(v, "roleplay:peds.name") == "") then
-									name = "[PED]"
+									name = "Error no Ped Name"
 								else
-									name = "[PED] " .. getElementData(v, "roleplay:peds.name"):gsub("_", " ")
+									name = getElementData(v, "roleplay:peds.name"):gsub("_", " ")
 								end
 								
 								if (isPedInVehicle(v)) then
@@ -95,16 +113,15 @@ addEventHandler("onClientRender", root,
 									if (vehicle) then
 										if (exports['roleplay-vehicles']:isVehicleTinted(vehicle)) then
 											if (getVehicleOccupant(vehicle, 0) ~= v) and (getVehicleOccupant(vehicle, 1) ~= v) then
-												name = "[PED] Unknown (Tinted Windows)"
+												name = "Unknown (Tinted Windows)"
 											end
 										end
 									end
 								end
 								
-								wsx = ((wsx-((dxGetTextWidth(name, 1.0, "clear")+10)/2))-5)
+								wsx = ((wsx-((dxGetTextWidth(name, 1.0, font)+10)/2))-5)
 								
-								dxDrawRectangle(wsx, wsy, dxGetTextWidth(name, 1.0, "clear")+10, dxGetFontHeight(1.0, "clear")+6, tocolor(0, 0, 0, 0.7*255), false)
-								dxDrawText(name, wsx+5, wsy+3, sx, sy, tocolor(245, 245, 245, 0.9*255), 1.0, "clear", "left", "top", true, false, false, false, bSubPixelPositioning)
+								dxDrawText(name, wsx+5, wsy+3, sx, sy, tocolor(245, 245, 245, 0.9*255), 1.0, font, "left", "top", true, false, false, false, bSubPixelPositioning)
 							end
 						end
 					end
@@ -131,3 +148,15 @@ addEventHandler("onClientPlayerJoin", root,
 		disableDefaultNametag(source)
 	end
 )
+
+
+local function checkForALT(button, press)
+	if button == "lalt" then
+    	if press then
+        	altpressed = true
+        else
+        	altpressed = false
+   		end
+   	end
+end
+addEventHandler("onClientKey", root, checkForALT)

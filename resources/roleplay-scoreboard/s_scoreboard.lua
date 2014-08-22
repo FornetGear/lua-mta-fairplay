@@ -32,6 +32,15 @@ addEventHandler("onResourceStart", resourceRoot,
 	end
 )
 
+
+addEventHandler("onPlayerChangeNick", getRootElement(),
+	function (oldNick, newNick)
+		if getPlayerName(source) == newNick then
+			triggerClientEvent(":_ScoreBoardupdatePlayerNick_:",source)
+		end
+	end
+)
+
 addEvent(":_doGetServerName_:", true)
 addEventHandler(":_doGetServerName_:", root,
 	function()
@@ -39,6 +48,7 @@ addEventHandler(":_doGetServerName_:", root,
 		triggerClientEvent(client, ":_doThrowServerName_:", client, getServerName())
 	end
 )
+
 
 function getLatestNews(clientReturn)
 	if (clientReturn) then

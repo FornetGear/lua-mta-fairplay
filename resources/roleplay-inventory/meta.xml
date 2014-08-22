@@ -24,7 +24,9 @@
 	
 	<!-- Main -->
 	<script src="c_inventory.lua" type="client" cache="false" />
+	<script src="c_vehicleinventory.lua" type="client" cache="false" />
 	<script src="s_inventory.lua" type="server" />
+	<script src="s_vehicleinventory.lua" type="server"/>
 	
 	<!-- Files -->
 	<file src="images/backpack.png" />

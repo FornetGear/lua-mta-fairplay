@@ -27,7 +27,7 @@ local armoredCars = {[427]=true, [528]=true, [432]=true, [601]=true, [428]=true,
 local platelessVehicles = {[592]=true, [553]=true, [577]=true, [488]=true, [511]=true, [497]=true, [548]=true, [563]=true, [512]=true, [476]=true, [593]=true, [447]=true, [425]=true, [519]=true, [520]=true, [460]=true, [417]=true, [469]=true, [487]=true, [513]=true, [509]=true, [481]=true, [510]=true, [472]=true, [473]=true, [493]=true, [595]=true, [484]=true, [430]=true, [453]=true, [452]=true, [446]=true, [454]=true, [571]=true}
 local bike = {[581]=true, [509]=true, [481]=true, [462]=true, [521]=true, [463]=true, [510]=true, [522]=true, [461]=true, [448]=true, [468]=true, [586]=true}
 
-function addVehicle(id, model, x, y, z, rx, ry, rz, interior, dimension, respawnX, respawnY, respawnZ, respawnRX, respawnRY, respawnRZ, respawnInterior, respawnDimension, handbraked, owner, rgb1, rgb2, engineState, lightState, damageProof, tinted, lastused, health, fuel, locked, description, panelState, doorState, wheelState, windowsDown, jobID, manualGearbox, plateText, isInitialization)
+function addVehicle(id, model, x, y, z, rx, ry, rz, interior, dimension, respawnX, respawnY, respawnZ, respawnRX, respawnRY, respawnRZ, respawnInterior, respawnDimension, handbraked, owner, rgb1, rgb2, engineState, lightState, damageProof, tinted, lastused, health, fuel, locked, manualGearbox, description, panelState, doorState, wheelState, windowsDown, jobID, plateText,inventory, isInitialization)
 	local vehicle
 	
 	if (jobID) and (jobID > 0) then
@@ -79,7 +79,10 @@ function addVehicle(id, model, x, y, z, rx, ry, rz, interior, dimension, respawn
 		local result = dbPoll(query, -1)
 		ownerName = result[1]["characterName"]
 	end
-	
+	local description = ""
+	if type(description) == "string" then
+		description = fromJSON(description)
+	end
 	setElementData(vehicle, "roleplay:vehicles.id", id, true)
 	setElementData(vehicle, "roleplay:vehicles.owner", (owner and owner or 0), true)
 	setElementData(vehicle, "roleplay:vehicles.ownername", ownerName, true)
@@ -93,7 +96,7 @@ function addVehicle(id, model, x, y, z, rx, ry, rz, interior, dimension, respawn
 	setElementData(vehicle, "roleplay:vehicles.oldz", z, false)
 	setElementData(vehicle, "roleplay:vehicles.job", (jobID and jobID or 0), true)
 	setElementData(vehicle, "roleplay:vehicles.description", (description and description or ""), true)
-	setElementData(vehicle, "roleplay:vehicles.geartype", (manualGearbox and manualGearbox or 1), true)
+	setElementData(vehicle, "roleplay:vehicles.geartype", tonumber(manualGearbox), true)
 	setElementData(vehicle, "roleplay:vehicles.currentGear", 0, true)
 	
 	local color1 = fromJSON(rgb1)
@@ -137,7 +140,24 @@ function addVehicle(id, model, x, y, z, rx, ry, rz, interior, dimension, respawn
 	
 	setVehicleDamageProof(vehicle, (damageProof == 1 and true or false))
 	setVehicleDoorsUndamageable(vehicle, (damageProof == 1 and true or false))
-	
+	setElementData(vehicle, "roleplay:vehicles.inventory",{}, true)
+	local weight = 0
+	if inventory ~= nil then
+		if type(inventory) == "string" then
+			inventory = fromJSON(inventory)
+			for k,v in ipairs(inventory) do
+				if(type(v) == "string") then
+					inventory[k] = fromJSON(v)
+					weight = exports['roleplay-items']:getItemWeight(inventory[k][1]) + weight
+				else
+					inventory[k] = {}
+				end
+			end
+			setElementData(vehicle, "roleplay:vehicles.inventory",inventory, true)
+		end
+	end
+	setElementData(vehicle, "roleplay:vehicles.weight", weight, true)
+	setElementData(vehicle, "roleplay:vehicles.maxweight", 100, true)
 	if (not isInitialization) then
 		triggerEvent(":_toggleSnowHandling_:", root, vehicle)
 	end
@@ -174,43 +194,6 @@ function addVehicle(id, model, x, y, z, rx, ry, rz, interior, dimension, respawn
 	--outputDebugString("Vehicle ID " .. id .. " loaded.")
 end
 
-function saveVehicle(vehicle)
-	local x, y, z = getElementPosition(vehicle)
-	local rx, ry, rz = getElementRotation(vehicle)
-	local r1, g1, b1, r2, g2, b2 = getVehicleColor(vehicle)
-	local color1 = toJSON({r1, g1, b1})
-	local color2 = toJSON({r2, g2, b2})
-	local plateText = getVehiclePlateText(vehicle)
-
-	local panel0 = getVehiclePanelState(vehicle, 0)
-	local panel1 = getVehiclePanelState(vehicle, 1)
-	local panel2 = getVehiclePanelState(vehicle, 2)
-	local panel3 = getVehiclePanelState(vehicle, 3)
-	local panel4 = getVehiclePanelState(vehicle, 4)
-	local panel5 = getVehiclePanelState(vehicle, 5)
-	local panel6 = getVehiclePanelState(vehicle, 6)
-	local panelState = toJSON({panel0, panel1, panel2, panel3, panel4, panel5, panel6})
-
-	local door0 = getVehicleDoorState(vehicle, 0)
-	local door1 = getVehicleDoorState(vehicle, 1)
-	local door2 = getVehicleDoorState(vehicle, 2)
-	local door3 = getVehicleDoorState(vehicle, 3)
-	local door4 = getVehicleDoorState(vehicle, 4)
-	local door5 = getVehicleDoorState(vehicle, 5)
-	local doorState = toJSON({door0, door1, door2, door3, door4, door5})
-
-	local wheel1, wheel2, wheel3, wheel4 = getVehicleWheelStates(vehicle)
-	local wheelState = toJSON({wheel1, wheel2, wheel3, wheel4})
-
-	local query = dbExec(exports['roleplay-accounts']:getSQLConnection(), "UPDATE `??` SET `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??', `??` = '??' WHERE `??` = '??'", "vehicles", "posX", x, "posY", y, "posZ", z, "rotX", rx, "rotY", ry, "rotZ", rz, "interior", getElementInterior(vehicle), "dimension", getElementDimension(vehicle), "health", (getElementHealth(vehicle) == 0 and 350 or getElementHealth(vehicle)), "userID", getVehicleOwner(vehicle), "engineState", (isVehicleEngineOn(vehicle) == true and 1 or 0), "lightState", (getVehicleOverrideLights(vehicle) == 1 and 0 or 1), "handbraked", (isVehicleHandbraked(vehicle) == true and 1 or 0), "damageproof", (isVehicleDamageProof(vehicle) == true and 1 or 0), "tinted", isVehicleTinted(vehicle), "lastused", getVehicleLastUsed(vehicle), "color1", color1, "color2", color2, "fuel", getVehicleRealFuel(vehicle), "locked", (isVehicleLocked(vehicle) and 1 or 0), "description", getVehicleDescription(vehicle), "wheelState", wheelState, "panelState", panelState, "doorState", doorState, "manualGearbox", (getVehicleGearType(vehicle)), "plateText", plateText, "id", getVehicleRealID(vehicle))
-
-	if (query) then
-		outputDebugString("Saved vehicle ID " .. getVehicleRealID(vehicle) .. ".")
-	else
-		outputDebugString("Failed to save vehicle ID " .. getVehicleRealID(vehicle) .. " to the database when querying.", 1)
-	end
-end
-
 addEventHandler("onResourceStart", resourceRoot,
 	function()
 		for _,v in ipairs(getElementsByType("player")) do
@@ -238,7 +221,7 @@ addEventHandler("onResourceStart", resourceRoot,
 				end
 				
 				for result,row in pairs(result) do
-					addVehicle(row["id"], row["modelid"], row["posX"], row["posY"], row["posZ"], row["rotX"], row["rotY"], row["rotZ"], row["interior"], row["dimension"], row["rPosX"], row["rPosY"], row["rPosZ"], row["rRotX"], row["rRotY"], row["rRotZ"], row["respawnInterior"], row["respawnDimension"], row["handbraked"], row["userID"], row["color1"], row["color2"], row["engineState"], row["lightState"], row["damageproof"], row["tinted"], row["lastused"], row["health"], row["fuel"], row["locked"], row["description"], row["panelState"], row["doorState"], row["wheelState"], row["windowsDown"], row["jobID"], row["manualGearbox"], row["plateText"], 1)
+					addVehicle(row["id"], row["modelid"], row["posX"], row["posY"], row["posZ"], row["rotX"], row["rotY"], row["rotZ"], row["interior"], row["dimension"], row["rPosX"], row["rPosY"], row["rPosZ"], row["rRotX"], row["rRotY"], row["rRotZ"], row["respawnInterior"], row["respawnDimension"], row["handbraked"], row["userID"], row["color1"], row["color2"], row["engineState"], row["lightState"], row["damageproof"], row["tinted"], row["lastused"], row["health"], row["fuel"], row["locked"], row["manualGearbox"], row["description"], row["panelState"], row["doorState"], row["wheelState"], row["windowsDown"], row["jobID"], row["plateText"],row['inventory'], 1)
 				end
 				
 				setTimer(triggerEvent, 7500, 1, ":_toggleSnowHandling_:", root)

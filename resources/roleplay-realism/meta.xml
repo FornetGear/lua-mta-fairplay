@@ -30,6 +30,7 @@
 	
 	<file src="speedo_speedbase.png" />
 	<file src="speedo_fuelbase.png" />
+	<file src="nametags.ttf" />
 	
 	<!-- Car paint -->
 	<script src="carpaint/c_car_paint.lua" type="client" cache="false" />

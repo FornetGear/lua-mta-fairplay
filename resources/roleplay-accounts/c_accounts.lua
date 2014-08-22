@@ -1060,7 +1060,6 @@ function initRealStartup()
 	bindKey("m", "down", "togcursor")
 	bindKey("f10", "down", "menu")
 	bindKey("pause", "down", "menu")
-	
 	if (getClientState(localPlayer) == 0) or (getClientState(localPlayer) == false) then
 		triggerServerEvent(":_doPatchBrokenData_:", localPlayer)
 		showChat(false)
@@ -1081,8 +1080,7 @@ function initRealStartup()
 		triggerServerEvent(":_fetchFreshMOTD_:", localPlayer)
 	end, 1*1000*3600, 0) -- Fetch news every hour
 end
-addEvent(":_initRealStartup_:", true)
-addEventHandler(":_initRealStartup_:", root, initRealStartup)
+addEventHandler("onClientResourceStart", resourceRoot, initRealStartup)
 
 addEvent(":_updateFreshMOTD_:", true)
 addEventHandler(":_updateFreshMOTD_:", root,

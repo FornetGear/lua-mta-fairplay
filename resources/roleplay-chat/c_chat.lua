@@ -19,9 +19,11 @@
 
 local sx, sy = guiGetScreenSize()
 local postGUI = false
-local isShowing = false
+local isShowing = true
 local messages = {}
+local colors = {}
 local messagesCounter = {}
+local font = "default-bold"
 
 function tablelength(table)
 	local count = 0
@@ -35,18 +37,15 @@ function dxDisplayChatBubbles()
 	--if (exports['roleplay-accounts']:getAccountSetting(localPlayer, "8") == 0) then return end
 	for _,player in ipairs(getElementsByType("player")) do
 		if (exports['roleplay-accounts']:isClientPlaying(player)) then
-			outputChatBox("ok1")
 			if (messages[player]) then
-				outputChatBox("oke")
 				for i,v in pairs(messages[player]) do
-					outputChatBox("okd")
 					if (getElementInterior(localPlayer) == getElementInterior(player)) and (getElementDimension(localPlayer) == getElementDimension(player)) then
-						outputChatBox("okv")
 						local x, y, z = getPedBonePosition(player, 7)
 						local wsx, wsy = getScreenFromWorldPosition(x, y, z+0.3)
-						local textWidth, textHeight = dxGetTextWidth(v), dxGetFontHeight()
-						dxDrawRectangle((wsx-(textWidth/2))-5, (((wsy-textHeight)-5)+(10*i-1))+(textHeight*i), textWidth+10, textHeight+10, tocolor(0, 0, 0, 0.8*255), postGUI)
-						dxDrawText(v, wsx-(textWidth/2), ((wsy-textHeight)+(10*i-1))+(textHeight*i), sx, sy, tocolor(255, 255, 255, 255))
+						if (type(wsx) == "number" and type(wsy) == "number") then
+							local textWidth, textHeight = dxGetTextWidth(v,1.2,font), dxGetFontHeight(1.2,font)
+							dxDrawText(v, wsx-(textWidth/2), ((wsy-textHeight)-(10*(i-1)))-(textHeight*(i-1)), sx, sy, colors[player][i],1.2,font)
+						end
 					end
 				end
 			end
@@ -56,19 +55,31 @@ end
 
 addEvent(":_displayChatBubble_:", true)
 addEventHandler(":_displayChatBubble_:", root,
-	function(message, player)
+	function(message, player, color)
 		if (not messages[player]) then
 			messages[player] = {}
+		end
+		if (not colors[player]) then
+			colors[player] = {}
 		end
 		
 		local id = (tablelength(messages[player]) and tablelength(messages[player])+1 or 1)
 		messages[player][id] = message
-		messagesCounter[count] = setTimer(function(player, id)
+		if not color then
+			color = tocolor(255,255,255)
+		end
+		colors[player][id] = color
+		messagesCounter[id] = setTimer(function(player, id)
 			if (tablelength(messages[player]) > 1) then
 				exports['roleplay-accounts']:condense(messages)
 			end
 			messages[player][id] = nil
-		end, 15000, 1, player, id)
+			colors[player][id] = nil
+		end, 
+		15000,
+		1, 
+		player,
+		id)
 	end
 )
 
@@ -82,7 +93,7 @@ end
 
 addEventHandler("onClientResourceStart", resourceRoot,
 	function()
-		--addEventHandler("onClientRender", root, dxDisplayChatBubbles)
+		addEventHandler("onClientRender", root, dxDisplayChatBubbles)
 	end
 )
 
@@ -92,9 +103,9 @@ addEventHandler(":_setChatbubbles_:", root,
 		if (state) then
 			isShowing = state
 			if (not isShowing) then
-				--removeEventHandler("onClientRender", root, dxDisplayChatBubbles)
+				removeEventHandler("onClientRender", root, dxDisplayChatBubbles)
 			else
-				--addEventHandler("onClientRender", root, dxDisplayChatBubbles)
+				addEventHandler("onClientRender", root, dxDisplayChatBubbles)
 			end
 		end
 	end

@@ -18,8 +18,8 @@
 ]]
 
 local ipAddress = ""
-local version = "1.0-GIT"
-local poweruserID = 1
+local version = "Butterfly"
+local poweruserID = 0
 
 MTAoutputChatBox_ = outputChatBox
 function outputLongChatBox(text, visibleTo, r, g, b, colorCoded)
@@ -373,25 +373,25 @@ end
 function hasDriversLicense(element)
 	if (not element) or (getElementType(element) ~= "player") then return end
 	if (not tonumber(getElementData(element, "roleplay:characters.dmv:license"))) then return 0 end
-	return (tonumber(getElementData(element, "roleplay:characters.dmv:license")) > 0 and true or false)
+	return (tonumber(getElementData(element, "roleplay:characters.dmv:license")) > 0)
 end
 
 function hasTruckLicense(element)
 	if (not element) or (getElementType(element) ~= "player") then return end
 	if (not tonumber(getElementData(element, "roleplay:characters.dmv:license"))) then return 0 end
-	return (tonumber(getElementData(element, "roleplay:characters.dmv:license")) == 2 and true or false)
+	return (tonumber(getElementData(element, "roleplay:characters.dmv:license")) == 2)
 end
 
 function hasManualTransmission(element)
 	if (not element) or (getElementType(element) ~= "player") then return end
 	if (not tonumber(getElementData(element, "roleplay:characters.dmv:manual"))) then return 0 end
-	return (tonumber(getElementData(element, "roleplay:characters.dmv:manual")) == 1 and true or false)
+	return (tonumber(getElementData(element, "roleplay:characters.dmv:manual")) == 1)
 end
 
 function hasAutomaticTransmission(element)
 	if (not element) or (getElementType(element) ~= "player") then return end
 	if (not tonumber(getElementData(element, "roleplay:characters.dmv:manual"))) then return 0 end
-	return (tonumber(getElementData(element, "roleplay:characters.dmv:manual")) >= 0 and true or false)
+	return (tonumber(getElementData(element, "roleplay:characters.dmv:manual")) >= 0)
 end
 
 function getClientID(element)

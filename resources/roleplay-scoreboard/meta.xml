@@ -24,4 +24,8 @@
 	
 	<script src="c_scoreboard.lua" type="client" cache="false" />
 	<script src="s_scoreboard.lua" type="server" />
+
+	<script src="exports/client_exports.lua" type="client" cache="false" />
+
+	<export function="isScoreboardEnabled" type="client" />
 </meta>

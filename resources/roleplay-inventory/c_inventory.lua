@@ -70,6 +70,12 @@ local DRAGEND_currentIndex = 0
 local DRAGEND_currentRow = 1
 local LOCKINVENTORY = false
 
+local messageSent1 = 2
+local messageSent2 = 2
+local messageSent3 = 2
+local tipsloaded = 0
+
+
 -- Script
 local function doesContainData(case)
 	if (not items[cases[case]]) or (#items[cases[case]] == 0) then
@@ -108,6 +114,13 @@ local function isHoveringWorldItem()
 		end
 	end
 end
+
+local function updateSQLTips()
+	if tipsloaded == 1 then
+		triggerServerEvent(":_updateSQLInventoryTips_:", localPlayer, messageSent1, messageSent2, messageSent3)
+	end
+end
+
 
 addEventHandler("onClientRender", root,
 	function()
@@ -324,10 +337,6 @@ addEventHandler("onClientCursorMove", root,
 	end
 )
 
-local messageSent1 = false
-local messageSent2 = false
-local messageSent3 = false
-
 addEventHandler("onClientKey", root,
 	function(button, pressOrRelease)
 		if (not DRAG_item) and (DELETING) then
@@ -356,6 +365,7 @@ addEventHandler("onClientKey", root,
 
 addEventHandler("onClientClick", root,
 	function(button, state, cx, cy, worldX, worldY, worldZ, clickedWorld)
+		triggerServerEvent(":_getInventoryTipsUpdate_:", localPlayer)
 		if (button ~= "left") then return end
 		if (not DRAG_item) and (DELETING) then
 			DELETING = false
@@ -475,25 +485,28 @@ addEventHandler("onClientClick", root,
 						if (not doesContainData(1)) then return end
 						if (CATEGORY_open == 1) then CATEGORY_open = nil return end
 						CATEGORY_open = 1
-						if (not messageSent1) then
+						if (messageSent1 == 0 and tipsloaded == 1) then
+							messageSent1 = 1
+							updateSQLTips()
 							triggerEvent(":_addNewMessage_:", localPlayer, "TIP: You can drag & drop items from your inventory to the world by holding your left mouse button when hovering an item in your inventory.")
-							messageSent1 = true
 						end
 					elseif (cx >= (sx-ROW_width+ITEM_scale*2+12)/2) and (cx <= ((sx-ROW_width+ITEM_scale*2+12)/2)+ITEM_scale) and (cy >= (sy-(ROW_offset-4))) and (cy <= (sy-(ROW_offset-4))+ITEM_scale) then
 						if (not doesContainData(2)) then return end
 						if (CATEGORY_open == 2) then CATEGORY_open = nil return end
 						CATEGORY_open = 2
-						if (not messageSent2) then
+						if (messageSent2 == 0 and tipsloaded == 1) then
+							messageSent2 = 1
+							updateSQLTips()
 							triggerEvent(":_addNewMessage_:", localPlayer, "TIP: You can drag & drop keys from your inventory to the world by holding your left mouse button when hovering a key in your inventory.")
-							messageSent2 = true
 						end
 					elseif (cx >= (sx-ROW_width+ITEM_scale*4+17)/2) and (cx <= ((sx-ROW_width+ITEM_scale*4+16)/2)+ITEM_scale) and (cy >= (sy-(ROW_offset-4))) and (cy <= (sy-(ROW_offset-4))+ITEM_scale) then
 						if (not doesContainData(3)) then return end
 						if (CATEGORY_open == 3) then CATEGORY_open = nil return end
 						CATEGORY_open = 3
-						if (not messageSent3) then
+						if (messageSent3 == 0 and tipsloaded == 1) then
+							messageSent3 = 1
+							updateSQLTips()
 							triggerEvent(":_addNewMessage_:", localPlayer, "TIP: You can drag & drop weapons from your inventory to the world by holding your left mouse button when hovering a weapon in your inventory.")
-							messageSent3 = true
 						end
 					end
 					
@@ -630,6 +643,17 @@ addEventHandler("onClientResourceStart", resourceRoot,
 		if (not exports['roleplay-accounts']:isClientPlaying(localPlayer)) then return end
 		setTimer(function()
 			triggerServerEvent(":_doGetInventory_:", localPlayer)
+			triggerServerEvent(":_getInventoryTipsUpdate_:", localPlayer)
 		end, 500, 1)
+	end
+)
+
+addEvent(":_updateInventoryTips_:",true)
+addEventHandler(":_updateInventoryTips_:",root,
+	function (_messageSent1,_messageSent2,_messageSent3)
+		tipsloaded = 1
+		messageSent1 = _messageSent1
+		messageSent2 = _messageSent2
+		messageSent3 = _messageSent3
 	end
 )

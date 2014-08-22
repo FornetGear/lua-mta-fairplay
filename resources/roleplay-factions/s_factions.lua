@@ -303,7 +303,7 @@ addEventHandler(":_invitePlayerToFaction_:", root,
 			return
 		end
 		
-		setElementData(client, "roleplay:temp.isInvited", 1, false)
+		setElementData(player, "roleplay:temp.isInvited", 1, true)
 		triggerClientEvent(player, ":_doInviteWindow_:", player, getPlayerName(client):gsub("_", " "), getFactionName(faction), factionID)
 	end
 )
@@ -324,7 +324,7 @@ addEventHandler(":_factionInviteResult_:", root,
 			return
 		end
 		
-		if (not getElementData(player, "roleplay:temp.isInvited")) then
+		if (getElementData(client, "roleplay:temp.isInvited") ~= 1) then
 			outputChatBox("Your invitation session has expired, try again.", client, 245, 20, 20, false)
 			return
 		end
@@ -346,7 +346,7 @@ addEventHandler(":_factionInviteResult_:", root,
 					outputChatBox(" [FactionAct] " .. byPlayer:gsub("_", " ") .. " invited " .. getPlayerName(client):gsub("_", " ") .. " to the faction.", v, 50, 210, 220, false)
 				end
 			end
-			
+			dbExec(exports['roleplay-accounts']:getSQLConnection(), "UPDATE `??` SET `??` = '??', `??` = '??', `??` = '??' WHERE `??` = '??'", "characters", "factionID", factionID, "factionPrivileges", 0, "factionRank", 1, "id", exports['roleplay-accounts']:getCharacterID(client))
 			setElementData(client, "roleplay:characters.faction", factionID, true)
 			setElementData(client, "roleplay:characters.faction:privileges", 0, true)
 			setElementData(client, "roleplay:characters.faction:rank", 1, true)
