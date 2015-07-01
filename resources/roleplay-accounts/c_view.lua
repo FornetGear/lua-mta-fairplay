@@ -338,7 +338,7 @@ function stopView()
 	removeEventHandler("onClientRender", root, displayView)
 end
 addEvent(":_stopViewPoint_:", true)
-addEventHandler(":_stopViewPoint_:", root, startView)
+addEventHandler(":_stopViewPoint_:", root, stopView)
 
 addCommandHandler("view",
 	function(cmd)
